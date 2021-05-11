@@ -27,13 +27,9 @@ else:
     uncanal = datos # se crea una copia de los datos
 
 
-# rango de observación en segundos, se truncan los datos en un tiempo
-inicia = 0.000
-termina = 4.002
-# observación en número de muestra
-a = int(inicia*frecuenciaM)
-b = int(termina*frecuenciaM)
-parte = uncanal[a:b]
+# rango de observación en segundos
+inicia = 0.000 # inicio en 0
+termina = muestras/frecuenciaM # final en segundos del audio.
 
 
 
@@ -45,17 +41,15 @@ waves.write('parte01.wav', frecuenciaM, datos)
 
 
 # Gráfica
-plt.plot(parte)
+plt.plot(datos)
 plt.show()
 
 
 # tiempos en eje x
 dt = 1/frecuenciaM # periodo
-ta = a*dt
-tb = (b)*dt
-tab = np.arange(ta,tb,dt)
+tab = np.arange(inicia,termina,dt)
 
-plt.plot(tab,parte)
+plt.plot(tab,datos)
 plt.xlabel('tiempo (s)')
 plt.ylabel('Amplitud')
 plt.show()
@@ -65,8 +59,8 @@ plt.show()
 
 #n=2**15
 # frecuencia en eje x
-n=32016
-y=parte
+n=38912
+y=datos
 Y = fft(y) / n # Normalizada  TRans de f
 frq = fftfreq(n, dt) # Recuperamos las frecuencias
 plt.vlines(frq, 0, abs(Y)) # Espectro de amplitud
