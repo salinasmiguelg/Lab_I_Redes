@@ -2,13 +2,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io.wavfile as waves
 from numpy import pi
-from scipy.fftpack import fft, fftfreq
+from scipy.fftpack import fft, fftfreq, ifft 
+# Documentacion:
+# Transformada de fourier:
+# https://docs.scipy.org/doc/scipy/reference/fftpack.html
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wavfile.read.html
+# https://pybonacci.org/2012/09/29/transformada-de-fourier-discreta-en-python-con-scipy/
+# Lectura, escritura y graficos:
+# http://blog.espol.edu.ec/estg1003/audio-archivo-wav-en-python/
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wavfile.write.html
+# http://blog.espol.edu.ec/estg1003/audio-archivo-wav-en-python/ 
+# http://blog.espol.edu.ec/telg1001/audio-en-formato-wav/
+# Espectograma:
+# https://stackoverflow.com/questions/55312659/how-can-i-create-spectograms-from-wav-files-in-python-for-audio-classification
 
 
-#archivo = input('Ingrese archivo de sonido:' )
-frecuenciaM, datos = waves.read('G13.wav') # frecuencia del muestreo y los datos.
 
-
+archivo = input('Ingrese archivo de sonido:' )
+frecuenciaM, datos = waves.read(archivo) # frecuencia del muestreo y los datos.
 
 
 # canales: monofónico o estéreo
@@ -43,7 +54,7 @@ plt.show()
 
 # frecuencia en eje x
 n=muestras
-FFT = fft(datos) / muestras # Normalizada  TRans de f
+FFT = fft(datos) / muestras # transformada de fourier normalizada 
 FFTfrq = fftfreq(muestras, p) # Recuperamos las frecuencias
 plt.vlines(FFTfrq, 0, abs(FFT)) # Espectro de amplitud
 plt.title('FFT, audio sobre la frecuencia') 
@@ -53,11 +64,20 @@ plt.savefig('fig2_audio_f.png')
 plt.show()
 
 
+
+antiFFT=ifft(FFT) # Se calcula la anti transformada de fourier
+plt.plot(np.real(antiFFT))
+plt.title('Antitransformada de fourier')    
+plt.savefig('fig3_antitransformada.png')
+plt.show()
+
+
+
 # Espectograma.
 plt.title('Espectograma')    
-Pxx, freqs, bins, im = plt.specgram(datos,Fs=frecuenciaM,NFFT=152)
+Pxx, freqs, bins, im = plt.specgram(datos,Fs=frecuenciaM,NFFT=256)
 plt.xlabel('Tiempo (s)')
 plt.ylabel('Frecuencia (Hz)')
 plt.xlim(left=0,right=5)
-plt.savefig('fig3_espectograma.png')
+plt.savefig('fig4_espectograma.png')
 plt.show()
