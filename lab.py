@@ -16,6 +16,80 @@ from scipy.fftpack import fft, fftfreq, ifft
 # Espectograma:
 # https://stackoverflow.com/questions/55312659/how-can-i-create-spectograms-from-wav-files-in-python-for-audio-classification
 
+def lowpass(frecuenciaM, datos, corte):
+	cantidad = np.shape(datos) # cantidad de datos en datos.
+	muestras = cantidad[0]  # cantidad de datos del primer canal.
+
+	# rango de observación en segundos
+	inicia = 0.000 # inicio en 0
+	termina = muestras/frecuenciaM # final en segundos del audio.
+
+	wn = (2*corte)/frecuenciaM
+	 
+	b, a = signal.butter(8, wn, 'lowpass')   #Configuration filter 8 representa el orden del filtro
+	filtedData = signal.filtfilt(b, a, datos)  #data es la señal a filtrar
+
+	# tiempos en eje x
+	dt = 1/frecuenciaM # periodo
+	tab = np.arange(inicia,termina,dt)
+
+
+	#plt.plot(tab,filtedData)
+	#plt.show()
+
+	return filtedData
+
+
+def highpass(frecuenciaM, datos, corte):
+	cantidad = np.shape(datos) # cantidad de datos en datos.
+	muestras = cantidad[0]  # cantidad de datos del primer canal.
+
+	# rango de observación en segundos
+	inicia = 0.000 # inicio en 0
+	termina = muestras/frecuenciaM # final en segundos del audio.
+
+	wn = (2*corte)/frecuenciaM
+	 
+	b, a = signal.butter(8, wn, 'highpass')   #Configuration filter 8 representa el orden del filtro
+
+	filtedData = signal.filtfilt(b, a, data)  #data es la señal a filtrar
+
+	# tiempos en eje x
+	dt = 1/frecuenciaM # periodo
+	tab = np.arange(inicia,termina,dt)
+
+
+	#plt.plot(tab,filtedData)
+	#plt.show()
+
+	return filtedData
+
+def bandpass(frecuenciaM, datos, intervaloApertura, intervaloCorte):
+	cantidad = np.shape(datos) # cantidad de datos en datos.
+	muestras = cantidad[0]  # cantidad de datos del primer canal.
+
+	# rango de observación en segundos
+	inicia = 0.000 # inicio en 0
+	termina = muestras/frecuenciaM # final en segundos del audio.
+
+	wn1 = (2*intervaloApertura)/frecuenciaM
+	wn2 = (2*intervaloCorte)/frecuenciaM
+	 
+
+	b, a = signal.butter(8, [wn1,wn2], 'bandpass')   #Configuration filter 8 representa el orden del filtro
+	filtedData = signal.filtfilt(b, a, data)  #data es la señal a filtrar
+	
+	# tiempos en eje x
+	dt = 1/frecuenciaM # periodo
+	tab = np.arange(inicia,termina,dt)
+
+
+	#plt.plot(tab,filtedData)
+	#plt.show()
+
+	return filtedData
+
+
 
 
 archivo = input('Ingrese archivo de sonido:' )
