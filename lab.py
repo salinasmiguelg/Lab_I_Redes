@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 import scipy.io.wavfile as waves
 from numpy import pi
 from scipy.fftpack import fft, fftfreq, ifft 
+from scipy import signal
+# Maximiliano Araya 20.467.583-k y Miguel Salinas 20.215.515-4
+# 14-05-2021
+
+
 # Documentacion:
 # Transformada de fourier:
 # https://docs.scipy.org/doc/scipy/reference/fftpack.html
@@ -15,6 +20,13 @@ from scipy.fftpack import fft, fftfreq, ifft
 # http://blog.espol.edu.ec/telg1001/audio-en-formato-wav/
 # Espectograma:
 # https://stackoverflow.com/questions/55312659/how-can-i-create-spectograms-from-wav-files-in-python-for-audio-classification
+# Filtros:
+# https://programmerclick.com/article/11751456084/
+
+
+
+
+
 
 def lowpass(frecuenciaM, datos, corte):
 	cantidad = np.shape(datos) # cantidad de datos en datos.
@@ -32,12 +44,8 @@ def lowpass(frecuenciaM, datos, corte):
 	# tiempos en eje x
 	dt = 1/frecuenciaM # periodo
 	tab = np.arange(inicia,termina,dt)
-
-
-	#plt.plot(tab,filtedData)
-	#plt.show()
-
 	return filtedData
+
 
 
 def highpass(frecuenciaM, datos, corte):
@@ -52,17 +60,15 @@ def highpass(frecuenciaM, datos, corte):
 	 
 	b, a = signal.butter(8, wn, 'highpass')   #Configuration filter 8 representa el orden del filtro
 
-	filtedData = signal.filtfilt(b, a, data)  #data es la señal a filtrar
+	filtedData = signal.filtfilt(b, a, datos)  #data es la señal a filtrar
 
 	# tiempos en eje x
 	dt = 1/frecuenciaM # periodo
 	tab = np.arange(inicia,termina,dt)
-
-
-	#plt.plot(tab,filtedData)
-	#plt.show()
-
 	return filtedData
+
+
+
 
 def bandpass(frecuenciaM, datos, intervaloApertura, intervaloCorte):
 	cantidad = np.shape(datos) # cantidad de datos en datos.
@@ -77,16 +83,11 @@ def bandpass(frecuenciaM, datos, intervaloApertura, intervaloCorte):
 	 
 
 	b, a = signal.butter(8, [wn1,wn2], 'bandpass')   #Configuration filter 8 representa el orden del filtro
-	filtedData = signal.filtfilt(b, a, data)  #data es la señal a filtrar
+	filtedData = signal.filtfilt(b, a, datos)  #data es la señal a filtrar
 	
 	# tiempos en eje x
 	dt = 1/frecuenciaM # periodo
 	tab = np.arange(inicia,termina,dt)
-
-
-	#plt.plot(tab,filtedData)
-	#plt.show()
-
 	return filtedData
 
 
@@ -112,7 +113,7 @@ termina = muestras/frecuenciaM # final en segundos del audio.
 
 
 
-# tiempos en eje x
+# audio con tiempos en eje x
 p = 1/frecuenciaM # periodo
 timeA = np.arange(inicia,termina,p) # arreglo para representar el tiempo.
 plt.plot(timeA,datos)
@@ -126,19 +127,19 @@ plt.show()
 
 
 
-# frecuencia en eje x
-n=muestras
+# audio con frecuencia en eje x
 FFT = fft(datos) / muestras # transformada de fourier normalizada 
 FFTfrq = fftfreq(muestras, p) # Recuperamos las frecuencias
 plt.vlines(FFTfrq, 0, abs(FFT)) # Espectro de amplitud
 plt.title('FFT, audio sobre la frecuencia') 
 plt.xlabel('Frecuencia (Hz)')
 plt.ylabel('Amplitud FFT (db)')
-plt.savefig('fig2_audio_f.png')
+plt.savefig('fig2_audio_frecuencia.png')
 plt.show()
 
 
 
+# antitransformada de la transformada del audio.
 antiFFT=ifft(FFT) # Se calcula la anti transformada de fourier
 plt.plot(np.real(antiFFT))
 plt.title('Antitransformada de fourier')    
@@ -147,7 +148,7 @@ plt.show()
 
 
 
-# Espectograma.
+# Espectograma del audio.
 plt.title('Espectograma')    
 Pxx, freqs, bins, im = plt.specgram(datos,Fs=frecuenciaM,NFFT=256)
 plt.xlabel('Tiempo (s)')
@@ -155,3 +156,85 @@ plt.ylabel('Frecuencia (Hz)')
 plt.xlim(left=0,right=5)
 plt.savefig('fig4_espectograma.png')
 plt.show()
+
+
+datosF=lowpass(frecuenciaM,datos, 400)
+
+muestras=np.shape(datosF)[0]
+
+# audio filtrado con frecuencia en eje x.
+FFT = fft(datosF) / muestras # transformada de fourier normalizada 
+FFTfrq = fftfreq(muestras, p) # Recuperamos las frecuencias
+plt.vlines(FFTfrq, 0, abs(FFT)) # Espectro de amplitud
+plt.title('FFT, audio filtrado lowpass sobre la frecuencia') 
+plt.xlabel('Frecuencia (Hz)')
+plt.ylabel('Amplitud FFT (db)')
+plt.savefig('fig5_audio_filtrado_lowpass_frecuencia.png')
+plt.show()
+
+
+
+# Espectograma del audio filtrado.
+plt.title('Espectograma audio filtrado lowpass')    
+Pxx, freqs, bins, im = plt.specgram(datosF,Fs=frecuenciaM,NFFT=256)
+plt.xlabel('Tiempo (s)')
+plt.ylabel('Frecuencia (Hz)')
+plt.xlim(left=0,right=5)
+plt.savefig('fig6_espectograma audio filtrado lowpass.png')
+plt.show()
+
+
+
+
+datosF=highpass(frecuenciaM,datos,100)
+muestras=np.shape(datosF)[0]
+# audio filtrado con frecuencia en eje x.
+FFT = fft(datosF) / muestras # transformada de fourier normalizada 
+FFTfrq = fftfreq(muestras, p) # Recuperamos las frecuencias
+plt.vlines(FFTfrq, 0, abs(FFT)) # Espectro de amplitud
+plt.title('FFT, audio filtrado highpass sobre la frecuencia') 
+plt.xlabel('Frecuencia (Hz)')
+plt.ylabel('Amplitud FFT (db)')
+plt.savefig('fig5_audio_filtrado_highpass_frecuencia.png')
+plt.show()
+
+
+
+# Espectograma del audio filtrado.
+plt.title('Espectograma audio filtrado highpass')    
+Pxx, freqs, bins, im = plt.specgram(datosF,Fs=frecuenciaM,NFFT=256)
+plt.xlabel('Tiempo (s)')
+plt.ylabel('Frecuencia (Hz)')
+plt.xlim(left=0,right=5)
+plt.savefig('fig6_espectograma audio filtrado highpass.png')
+plt.show()
+
+
+
+datosF=bandpass(frecuenciaM,datos,100,400)
+muestras=np.shape(datosF)[0]
+# audio filtrado con frecuencia en eje x.
+FFT = fft(datosF) / muestras # transformada de fourier normalizada 
+FFTfrq = fftfreq(muestras, p) # Recuperamos las frecuencias
+plt.vlines(FFTfrq, 0, abs(FFT)) # Espectro de amplitud
+plt.title('FFT, audio filtrado bandpass sobre la frecuencia') 
+plt.xlabel('Frecuencia (Hz)')
+plt.ylabel('Amplitud FFT (db)')
+plt.savefig('fig5_audio_filtrado_bandpass_frecuencia.png')
+plt.show()
+
+
+
+# Espectograma del audio filtrado.
+plt.title('Espectograma audio filtrado bandpass')    
+Pxx, freqs, bins, im = plt.specgram(datosF,Fs=frecuenciaM,NFFT=256)
+plt.xlabel('Tiempo (s)')
+plt.ylabel('Frecuencia (Hz)')
+plt.xlim(left=0,right=5)
+plt.savefig('fig6_espectograma audio filtrado bandpass.png')
+plt.show()
+
+
+
+
+
