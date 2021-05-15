@@ -4,7 +4,11 @@ import scipy.io.wavfile as waves
 from numpy import pi
 from scipy.fftpack import fft, fftfreq, ifft 
 from scipy import signal
-# Maximiliano Araya 20.467.583-k y Miguel Salinas 20.215.515-4
+
+# Maximiliano Araya 20.467.583-K 
+# Miguel Salinas 20.215.515-4
+# Laboratorio I
+# Redes de Computadores
 # 14-05-2021
 
 
@@ -23,11 +27,19 @@ from scipy import signal
 # Filtros:
 # https://programmerclick.com/article/11751456084/
 
+# DESCRIPCIÓN DEL PROGRAMA: El siguiente programa lee un archivo de extensión ".wav" para así obtener su frecuencia de muestreo junto con los datos
+# para posteriormente procesar estos datos a través de la herramiente de "Transformada de Fourier" y a su vez aplicando dicha herramienta a filtro FIR diseñado.
 
 
 
 
+# BLOQUE DE FUNCIONES:
 
+
+# ENTRADA: frecuenciaM es un valor entero respectivo a la frencuencia de muestreo de los datos, datos una lista que contiene los datos 
+# y corte un valor float correspondiente al corte para el filtro
+# SALIDA: Una lista con los datos filtrados.
+# OBJETIVO: Aplicar un filtro de pasa bajos a unos datos dados.
 def lowpass(frecuenciaM, datos, corte):
 	cantidad = np.shape(datos) # cantidad de datos en datos.
 	muestras = cantidad[0]  # cantidad de datos del primer canal.
@@ -47,7 +59,10 @@ def lowpass(frecuenciaM, datos, corte):
 	return filtedData
 
 
-
+# ENTRADA: frecuenciaM es un valor entero respectivo a la frencuencia de muestreo de los datos, datos una lista que contiene los datos 
+# y corte un valor float correspondiente al corte para el filtro
+# SALIDA: Una lista con los datos filtrados.
+# OBJETIVO: Aplicar un filtro de pasa altos a unos datos dados.
 def highpass(frecuenciaM, datos, corte):
 	cantidad = np.shape(datos) # cantidad de datos en datos.
 	muestras = cantidad[0]  # cantidad de datos del primer canal.
@@ -68,8 +83,11 @@ def highpass(frecuenciaM, datos, corte):
 	return filtedData
 
 
-
-
+# ENTRADA: frecuenciaM es un valor entero respectivo a la frencuencia de muestreo de los datos, datos una lista que contiene los datos,
+# intervaloApertura un valor float correspondiente a la aporterura el intervalo de corte para el filtro 
+# y intervaloCorte un valor float correspondiente a la cierre el intervalo de corte para el filtro
+# SALIDA: Una lista con los datos filtrados.
+# OBJETIVO: Aplicar un filtro de pasa banda a unos datos dados.
 def bandpass(frecuenciaM, datos, intervaloApertura, intervaloCorte):
 	cantidad = np.shape(datos) # cantidad de datos en datos.
 	muestras = cantidad[0]  # cantidad de datos del primer canal.
@@ -92,6 +110,9 @@ def bandpass(frecuenciaM, datos, intervaloApertura, intervaloCorte):
 
 
 
+
+
+# BLOQUE PRINCIPAL:
 
 archivo = input('Ingrese archivo de sonido:' )
 frecuenciaM, datos = waves.read(archivo) # frecuencia del muestreo y los datos.
@@ -166,7 +187,6 @@ plt.show()
 
 datosF=lowpass(frecuenciaM,datos, 2500)
 muestras=np.shape(datosF)[0]
-print(muestras)
 waves.write('Filtro lowpass.wav', frecuenciaM, datosF)
 
 # audio filtrado con frecuencia en eje x.
@@ -190,58 +210,6 @@ plt.xlim(left=0,right=5)
 plt.savefig('fig6_espectograma audio filtrado lowpass.png')
 plt.show()
 
-
-
-
-datosF=highpass(frecuenciaM,datos,2500)
-muestras=np.shape(datosF)[0]
-waves.write('Filtro highpass.wav', frecuenciaM, datosF)
-# audio filtrado con frecuencia en eje x.
-FFT = fft(datosF) / muestras # transformada de fourier normalizada 
-FFTfrq = fftfreq(muestras, p) # Recuperamos las frecuencias
-plt.vlines(FFTfrq, 0, abs(FFT)) # Espectro de amplitud
-plt.title('FFT, audio filtrado highpass sobre la frecuencia') 
-plt.xlabel('Frecuencia (Hz)')
-plt.ylabel('Amplitud FFT (db)')
-plt.savefig('fig7_audio_filtrado_highpass_frecuencia.png')
-plt.show()
-
-
-
-# Espectograma del audio filtrado.
-plt.title('Espectograma audio filtrado highpass')    
-Pxx, freqs, bins, im = plt.specgram(datosF,Fs=frecuenciaM,NFFT=256)
-plt.xlabel('Tiempo (s)')
-plt.ylabel('Frecuencia (Hz)')
-plt.xlim(left=0,right=5)
-plt.savefig('fig8_espectograma audio filtrado highpass.png')
-plt.show()
-
-
-
-datosF=bandpass(frecuenciaM,datos,1000,2500)
-muestras=np.shape(datosF)[0]
-waves.write('Filtro bandpass.wav', frecuenciaM, datosF)
-# audio filtrado con frecuencia en eje x.
-FFT = fft(datosF) / muestras # transformada de fourier normalizada 
-FFTfrq = fftfreq(muestras, p) # Recuperamos las frecuencias
-plt.vlines(FFTfrq, 0, abs(FFT)) # Espectro de amplitud
-plt.title('FFT, audio filtrado bandpass sobre la frecuencia') 
-plt.xlabel('Frecuencia (Hz)')
-plt.ylabel('Amplitud FFT (db)')
-plt.savefig('fig9_audio_filtrado_bandpass_frecuencia.png')
-plt.show()
-
-
-
-# Espectograma del audio filtrado.
-plt.title('Espectograma audio filtrado bandpass')    
-Pxx, freqs, bins, im = plt.specgram(datosF,Fs=frecuenciaM,NFFT=256)
-plt.xlabel('Tiempo (s)')
-plt.ylabel('Frecuencia (Hz)')
-plt.xlim(left=0,right=5)
-plt.savefig('fig10_espectograma audio filtrado bandpass.png')
-plt.show()
 
 
 
